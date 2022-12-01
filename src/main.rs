@@ -1,8 +1,9 @@
-mod task1;
+mod day1;
+mod day_template;
 
 extern crate rayon;
 
 fn main() {
-    println!("{}", task1::task_a().unwrap());
-    println!("{}", task1::task_b().unwrap());
+    println!("{}", day1::task_a("data/day1.txt").unwrap());
+    println!("{}", day1::task_b("data/day1.txt").unwrap());
 }
