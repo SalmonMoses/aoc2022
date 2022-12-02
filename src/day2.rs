@@ -158,7 +158,7 @@ where
 {
     let score = utils::get_input_file(file)?
         .lines()
-        // .par_bridge()
+        .par_bridge()
         .filter_map(|line| line.ok())
         .map(|line| Game::from_str(&line))
         .filter_map(|game| game.ok())
