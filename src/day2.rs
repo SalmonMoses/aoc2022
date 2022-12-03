@@ -25,24 +25,6 @@ enum Shape {
 }
 
 impl Shape {
-    fn from_player_char(sym: &str) -> Result<Shape, ParsingError> {
-        match sym {
-            "X" => Ok(Shape::Rock),
-            "Y" => Ok(Shape::Paper),
-            "Z" => Ok(Shape::Scissors),
-            _ => Err(ParsingError::UnknownSymbol(sym.to_string())),
-        }
-    }
-
-    fn from_opponent_char(sym: &str) -> Result<Shape, ParsingError> {
-        match sym {
-            "A" => Ok(Shape::Rock),
-            "B" => Ok(Shape::Paper),
-            "C" => Ok(Shape::Scissors),
-            _ => Err(ParsingError::UnknownSymbol(sym.to_string())),
-        }
-    }
-
     fn get_winning_symbol(&self) -> Shape {
         match self {
             Shape::Rock => Shape::Paper,
@@ -68,19 +50,34 @@ impl Shape {
     }
 }
 
+impl FromStr for Shape {
+    type Err = ParsingError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "X" | "A" => Ok(Shape::Rock),
+            "Y" | "B" => Ok(Shape::Paper),
+            "Z" | "C" => Ok(Shape::Scissors),
+            _ => Err(ParsingError::UnknownSymbol(s.to_string())),
+        }
+    }
+}
+
 enum GameResult {
     Win,
     Draw,
     Lose,
 }
 
-impl GameResult {
-    fn from_char(sym: &str) -> Result<GameResult, ParsingError> {
-        match sym {
+impl FromStr for GameResult {
+    type Err = ParsingError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
             "X" => Ok(GameResult::Lose),
             "Y" => Ok(GameResult::Draw),
             "Z" => Ok(GameResult::Win),
-            _ => Err(ParsingError::UnknownSymbol(sym.to_string())),
+            _ => Err(ParsingError::UnknownSymbol(s.to_string())),
         }
     }
 }
@@ -119,11 +116,11 @@ impl FromStr for Game {
         let opponent_shape = splitted_string
             .next()
             .ok_or(ParsingError::InvalidFormat(s.to_string()))
-            .and_then(|s| Shape::from_opponent_char(s))?;
+            .and_then(|s| Shape::from_str(s))?;
         let player_shape = splitted_string
             .next()
             .ok_or(ParsingError::InvalidFormat(s.to_string()))
-            .and_then(|s| Shape::from_player_char(s))?;
+            .and_then(|s| Shape::from_str(s))?;
         Ok(Game {
             player: player_shape,
             enemy: opponent_shape,
@@ -136,11 +133,11 @@ fn task_b_from_str(s: &str) -> Result<Game, ParsingError> {
     let opponent_shape = splitted_string
         .next()
         .ok_or(ParsingError::InvalidFormat(s.to_string()))
-        .and_then(|s| Shape::from_opponent_char(s))?;
+        .and_then(|s| Shape::from_str(s))?;
     let game_result = splitted_string
         .next()
         .ok_or(ParsingError::InvalidFormat(s.to_string()))
-        .and_then(|s| GameResult::from_char(s))?;
+        .and_then(|s| GameResult::from_str(s))?;
     let player_shape = match game_result {
         GameResult::Win => opponent_shape.get_winning_symbol(),
         GameResult::Draw => opponent_shape,
@@ -156,30 +153,26 @@ pub fn task_a<P>(file: P) -> io::Result<u32>
 where
     P: AsRef<Path>,
 {
-    let score = utils::get_input_file(file)?
+    Ok(utils::get_input_file(file)?
         .lines()
         .par_bridge()
         .filter_map(|line| line.ok())
-        .map(|line| Game::from_str(&line))
-        .filter_map(|game| game.ok())
+        .filter_map(|line| Game::from_str(&line).ok())
         .map(|game| game.get_player_score())
-        .sum();
-    Ok(score)
+        .sum())
 }
 
 pub fn task_b<P>(file: P) -> io::Result<u32>
 where
     P: AsRef<Path>,
 {
-    let score = utils::get_input_file(file)?
+    Ok(utils::get_input_file(file)?
         .lines()
         .par_bridge()
         .filter_map(|line| line.ok())
-        .map(|line| task_b_from_str(&line))
-        .filter_map(|game| game.ok())
+        .filter_map(|line| task_b_from_str(&line).ok())
         .map(|game| game.get_player_score())
-        .sum();
-    Ok(score)
+        .sum())
 }
 
 #[cfg(test)]

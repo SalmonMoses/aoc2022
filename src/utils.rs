@@ -10,7 +10,6 @@ where
     Ok(BufReader::new(input_file))
 }
 
-#[allow(dead_code)]
 pub fn get_input_string<P>(path: P) -> Result<String>
 where
     P: AsRef<Path>,
