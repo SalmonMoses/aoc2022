@@ -1,9 +1,10 @@
 use crate::utils;
 use nom::bytes::complete::tag;
 use nom::character::complete::digit1;
-use nom::combinator::map_res;
+use nom::combinator::{map_parser, map_res};
 use nom::multi::separated_list1;
-use rayon::iter::{IntoParallelRefIterator, ParallelBridge};
+use nom::sequence::tuple;
+use rayon::prelude::*;
 use std::convert::identity;
 use std::fs::File;
 use std::io;
@@ -12,24 +13,35 @@ use std::ops::RangeInclusive;
 use std::path::Path;
 use std::str::FromStr;
 
+use thiserror::Error;
+
 type Assignment = (RangeInclusive<u64>, RangeInclusive<u64>);
+
+#[derive(Error, Debug)]
+enum ParsingError {
+    #[error("Something is wrong")]
+    Err,
+}
 
 fn parse_file(input: &str) -> nom::IResult<&str, Vec<Assignment>> {
     separated_list1(tag("\r\n"), parse_line)(input)
 }
 
 fn parse_line(input: &str) -> nom::IResult<&str, Assignment> {
-    let (input, first) = parse_group(&input)?;
-    let (input, _) = tag(",")(input)?;
-    let (input, second) = parse_group(input)?;
-    Ok((input, (first, second)))
+    nom::combinator::map(
+        tuple((parse_group, tag(","), parse_group)),
+        |(first, _, second)| (first, second),
+    )(input)
 }
 
 fn parse_group(input: &str) -> nom::IResult<&str, RangeInclusive<u64>> {
-    let (input, start) = map_res(digit1, u64::from_str)(input)?;
-    let (input, _) = tag("-")(input)?;
-    let (input, finish) = map_res(digit1, u64::from_str)(input)?;
-    Ok((input, start..=finish))
+    nom::combinator::map(tuple((integer, tag("-"), integer)), |(start, _, end)| {
+        start..=end
+    })(input)
+}
+
+fn integer(input: &str) -> nom::IResult<&str, u64> {
+    map_res(digit1, u64::from_str)(input)
 }
 
 fn fully_contains(a: &RangeInclusive<u64>, b: &RangeInclusive<u64>) -> bool {
