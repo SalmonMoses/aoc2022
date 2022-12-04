@@ -34,7 +34,7 @@ fn char_to_priority(c: char) -> Result<u8, AsciiError> {
     Ok(0)
 }
 
-fn get_rucksak_priority(rucksack: &str) -> Option<u64> {
+fn get_rucksack_priority(rucksack: &str) -> Option<u64> {
     let string_len = rucksack.len();
     let chars_slice = rucksack.chars().collect::<Vec<char>>();
     let (first, second) = chars_slice.split_at(string_len / 2);
@@ -57,7 +57,7 @@ where
         .lines()
         .par_bridge()
         .filter_map(|line| line.ok())
-        .filter_map(|line| get_rucksak_priority(&line))
+        .filter_map(|line| get_rucksack_priority(&line))
         .sum())
 }
 
