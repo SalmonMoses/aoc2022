@@ -1,6 +1,6 @@
 use crate::utils;
 use nom::bytes::complete::tag;
-use nom::character::complete::digit1;
+use nom::character::complete::{digit1, line_ending};
 use nom::combinator::{map_parser, map_res};
 use nom::multi::separated_list1;
 use nom::sequence::tuple;
@@ -24,7 +24,7 @@ enum ParsingError {
 }
 
 fn parse_file(input: &str) -> nom::IResult<&str, Vec<Assignment>> {
-    separated_list1(tag("\r\n"), parse_line)(input)
+    separated_list1(line_ending, parse_line)(input)
 }
 
 fn parse_line(input: &str) -> nom::IResult<&str, Assignment> {

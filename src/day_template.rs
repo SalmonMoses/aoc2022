@@ -3,11 +3,11 @@
 // use std::io::BufReader;
 // use std::path::Path;
 //
-// pub fn task_a<P>(file: P) -> io::Result<String> where P: AsRef<Path> {
+// pub fn task_a<P>(file: P) -> io::Result<u64> where P: AsRef<Path> {
 //     unimplemented!()
 // }
 //
-// pub fn task_b<P>(file: P) -> io::Result<String> where P: AsRef<Path> {
+// pub fn task_b<P>(file: P) -> io::Result<u64> where P: AsRef<Path> {
 //     unimplemented!()
 // }
 //
@@ -17,11 +17,13 @@
 //
 //     #[test]
 //     fn test_a_works() {
-//         assert!(false)
+//         let result = task_a("data/dayt.txt").unwrap();
+//         assert_eq!(result, 0)
 //     }
 //
 //     #[test]
 //     fn test_b_works() {
-//         assert!(false)
+//         let result = task_b("data/dayt.txt").unwrap();
+//         assert_eq!(result, 0)
 //     }
 // }
