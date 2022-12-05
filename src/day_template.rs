@@ -3,11 +3,11 @@
 // use std::io::BufReader;
 // use std::path::Path;
 //
-// pub fn task_a<P>(file: P) -> io::Result<u64> where P: AsRef<Path> {
+// pub fn task_a<P>(file: P) -> io::Result<String> where P: AsRef<Path> {
 //     unimplemented!()
 // }
 //
-// pub fn task_b<P>(file: P) -> io::Result<u64> where P: AsRef<Path> {
+// pub fn task_b<P>(file: P) -> io::Result<String> where P: AsRef<Path> {
 //     unimplemented!()
 // }
 //

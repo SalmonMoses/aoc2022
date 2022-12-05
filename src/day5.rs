@@ -1,3 +1,4 @@
+use crate::parsers::integer;
 use crate::utils;
 use itertools::Itertools;
 use nom::branch::alt;
@@ -6,7 +7,7 @@ use nom::character::complete::{alpha1, digit1, line_ending, multispace0, space0}
 use nom::combinator::{map_res, opt};
 use nom::error::dbg_dmp;
 use nom::multi::separated_list1;
-use nom::sequence::tuple;
+use nom::sequence::{delimited, tuple};
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::fmt::{Display, Formatter};
@@ -82,10 +83,6 @@ fn parse_movement_command(input: &str) -> nom::IResult<&str, Movement> {
     )(input)
 }
 
-fn integer(input: &str) -> nom::IResult<&str, u64> {
-    map_res(digit1, u64::from_str)(input)
-}
-
 fn parse_stacks_number(input: &str) -> Option<u64> {
     input
         .split(" ")
@@ -98,7 +95,7 @@ fn parse_empty_crate(input: &str) -> nom::IResult<&str, Option<Crate>> {
 }
 
 fn parse_crate(input: &str) -> nom::IResult<&str, Option<Crate>> {
-    nom::combinator::map(tuple((tag("["), alpha1, tag("]"))), |(_, name, _)| {
+    nom::combinator::map(delimited(tag("["), alpha1, tag("]")), |name| {
         Some(Crate { name })
     })(input)
 }

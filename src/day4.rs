@@ -13,6 +13,7 @@ use std::ops::RangeInclusive;
 use std::path::Path;
 use std::str::FromStr;
 
+use crate::parsers::integer;
 use thiserror::Error;
 
 type Assignment = (RangeInclusive<u64>, RangeInclusive<u64>);
@@ -38,10 +39,6 @@ fn parse_group(input: &str) -> nom::IResult<&str, RangeInclusive<u64>> {
     nom::combinator::map(tuple((integer, tag("-"), integer)), |(start, _, end)| {
         start..=end
     })(input)
-}
-
-fn integer(input: &str) -> nom::IResult<&str, u64> {
-    map_res(digit1, u64::from_str)(input)
 }
 
 fn fully_contains(a: &RangeInclusive<u64>, b: &RangeInclusive<u64>) -> bool {
